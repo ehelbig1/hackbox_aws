@@ -1,0 +1,45 @@
+Parameters:
+  ImageId:
+    Description: The Kali Image Id
+    Default: ami-0212d39aa1d70f26b
+    Type: String
+  InstanceType:
+    Description: The EC2 Instance Type
+    Default: t3.large
+    Type: String
+  KeyName:
+    Description: Key Pair Name
+    Type: String
+  SubnetId:
+    Description: Subnet Id to deploy EC2 in
+    Type: String
+  SecurityGroupSSHIngressIp:
+    Description: Security Group SSH Ingress Ip
+    Default: 0.0.0.0/0
+    Type: String
+  VpcId:
+    Description: VPC Id where Security Group will be created
+    Type: String
+Resources:
+  Hackbox:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SecurityGroupIds:
+        - !Ref HackboxSecurityGroup
+      SubnetId: !Ref SubnetId
+  HackboxSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties: 
+      GroupDescription: Hackbox Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SecurityGroupSSHIngressIp
+      VpcId: !Ref VpcId
+Outputs:
+  PublicIp:
+    Value: !GetAtt Hackbox.PublicIp
